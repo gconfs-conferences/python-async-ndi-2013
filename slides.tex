@@ -51,7 +51,7 @@
 
 \begin{frame}[fragile]\frametitle{Synchronous I/O}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   In the vast majority of server applications, the limiting factor is
@@ -74,7 +74,7 @@
 
 \begin{frame}[fragile]\frametitle{Note on Synchronous I/O}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   There are some ways of making synchronous I/O non blocking
@@ -92,7 +92,7 @@
 
 \begin{frame}[fragile]\frametitle{Asynchronous I/O}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   We need a way to keep the CPU busy
@@ -121,7 +121,7 @@
 
 \begin{frame}[fragile]\frametitle{Disclaimer}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   Python \textgreater{}= 3.3
@@ -137,6 +137,7 @@
 
 \begin{frame}[fragile]\frametitle{Generators}
 
+\footnotesize{
 \begin{minted}{python}
 
     def make_generator():
@@ -146,21 +147,23 @@
     g = make_generator()
 
     print(g)
-    \# <generator object make_generator at 0x7fe98ec66690>
+    # <generator object make_generator at 0x7fe98ec66690>
 
     print(next(g))
-    \# 0
+    # 0
     print(next(g))
-    \# 1
+    # 1
     print(next(g))
-    \# Exception: StopIteration
+    # Exception: StopIteration
 
 \end{minted}
+}
 
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{Generators}
 
+\footnotesize{
 \begin{minted}{python}
     def make_generator():
         print('Start')
@@ -181,6 +184,7 @@
     # End
     # Exception: StopIteration
 \end{minted}
+}
 
 \end{frame}
 
@@ -188,21 +192,24 @@
 
 Easy way to have ``laziness'' in Python:
 
+\footnotesize{
 \begin{minted}{python}
     def get_pages():
         for i in range(10):
-            yield requests.get('http://example.com/page/{}'.format(i)).text
+            yield requests.get(
+                'http://example.com/page/{}'.format(i)).text
 
     def main():
         for p in get_pages():
             print(p)
 \end{minted}
+}
 
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{Coroutines}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   A coroutine is a routine that can be suspended and resumed
@@ -250,7 +257,7 @@ It can be rewritten like this:
                 break
 \end{minted}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   We can see the explicit call to next(), which \emph{resumes} the
@@ -277,7 +284,7 @@ This is equivalent to:
 
 \end{minted}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   A generator is a coroutine
@@ -289,7 +296,7 @@ This is equivalent to:
 
 \begin{frame}[fragile]\frametitle{Coroutines}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   We can communicate with our coroutine by sending values!
@@ -329,7 +336,7 @@ This is equivalent to:
     yield from coroutine
 \end{minted}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   Added in Python 3.3 (PEP 380)
@@ -373,7 +380,7 @@ This is equivalent to:
 
 \begin{frame}[fragile]\frametitle{Explanation}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   So, how coroutines and Async I/O are actually related?
@@ -403,12 +410,13 @@ This is equivalent to:
 \end{minted}
 }
 
-\begin{itemize}
+\normalsize{
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   The framework provides base functions (read/write/\ldots{}) that uses
-  internally non-blocking synchronous I/O in their eventloop (kqueue,
-  epoll, fallback on select)
+  internally I/O operations in their eventloop (using kqueue,
+  epoll or select)
 \item
   This is extremely verbose, due to the fact we're constantly changing
   routines
@@ -416,6 +424,7 @@ This is equivalent to:
   At least we achieved our goal! We can launch ``parallels'' reads,
   instead of waiting at each blocking read.
 \end{itemize}
+}
 
 \end{frame}
 
@@ -437,7 +446,7 @@ This is equivalent to:
 
 \begin{frame}[fragile]\frametitle{Futures}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   What if we used \textbf{yield points} instead of callbacks?
@@ -460,7 +469,7 @@ This is equivalent to:
         future = read(fd, callback=on_read_received)
         print('Not blocking!')
 
-        data = yield future # "Yield point", interrupt/resume
+        data = yield future # "Yield point"
         content += data
 \end{minted}
 
@@ -468,7 +477,7 @@ This is equivalent to:
 
 \begin{frame}[fragile]\frametitle{Futures}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   The I/O is no longer blocking, your coroutine is just ``resumed'' when
@@ -502,7 +511,7 @@ In the case of a web server:
 
 \begin{frame}[fragile]\frametitle{Gevent}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   Certainly the most known/used event library in Python 2
@@ -520,7 +529,7 @@ In the case of a web server:
 
 \begin{frame}[fragile]\frametitle{Twisted}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   Good alternative, using ``Deferred'' for futures
@@ -536,7 +545,7 @@ In the case of a web server:
 
 \begin{frame}[fragile]\frametitle{Tornado}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   Web-oriented framework
@@ -554,7 +563,7 @@ In the case of a web server:
 
 \begin{frame}[fragile]\frametitle{Toro}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   A library that provides synchronisation primitives for Tornado
@@ -569,7 +578,7 @@ In the case of a web server:
 
 \begin{frame}[fragile]\frametitle{Tulip (asyncio)}
 
-\begin{itemize}
+\begin{itemize}[<+->]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
   PEP 3156: Asynchronous IO Support Rebooted
