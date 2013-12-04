@@ -2,7 +2,6 @@
 % Antoine Pietri
 % 2013-12-06
 
-
 # Introduction
 
 ## Synchronous I/O
@@ -151,6 +150,7 @@ It can be rewritten like this:
 This is equivalent to:
 
 \begin{minted}{python}
+
     def main():
         generator = get_pages()
         while True:
@@ -158,6 +158,7 @@ This is equivalent to:
                 print(generator.send(None))
             except StopIteration:
                 break
+
 \end{minted}
 
 * A generator is a coroutine
