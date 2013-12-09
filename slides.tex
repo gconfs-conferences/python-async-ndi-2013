@@ -466,7 +466,7 @@ This is equivalent to:
 \begin{minted}{python}
     content = b''
     def read_async(fd):
-        future = read(fd, callback=on_read_received)
+        future = read(fd) # Returns future
         print('Not blocking!')
 
         data = yield future # "Yield point"
